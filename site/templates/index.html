@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IC - Página Inicial</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">IC</div>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}" class="active">Home</a>
+            <a href="#">Sobre</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('ferramentas') }}">Ferramentas</a>
+            <a href="#">Contato</a>
+        </div>
+        <div class="search">
+            <input type="text" placeholder="Pesquisar no site"/>
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Bem-vindo à Plataforma IC</h1>
+        <p>Uma solução completa para processamento de imagens e inteligência artificial</p>
+        <a href="{{ url_for('register') }}" class="cta-button">Comece Agora</a>
+    </div>
+
+    <div class="features">
+        <h2>Recursos Principais</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-image"></i>
+                <h3>Processamento de Imagens</h3>
+                <p>Ferramentas avançadas para manipulação e análise de imagens</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>Inteligência Artificial</h3>
+                <p>Modelos de IA para detecção de objetos e classificação de imagens</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Análise de Dados</h3>
+                <p>Visualização e interpretação de resultados de forma clara e intuitiva</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Pronto para começar?</h2>
+        <p>Junte-se a nós e explore o potencial da inteligência artificial no processamento de imagens.</p>
+        <a href="{{ url_for('register') }}" class="cta-button">Criar Conta</a>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sobre Nós</h3>
+                <p>A Plataforma IC é dedicada a fornecer soluções inovadoras em processamento de imagens e IA.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Links Rápidos</h3>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="#">Sobre</a></li>
+                    <li><a href="{{ url_for('ferramentas') }}">Ferramentas</a></li>
+                    <li><a href="#">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contato</h3>
+                <p>Entre em contato conosco para obter mais informações ou suporte.</p>
+                <a href="mailto:contato@ic.com.br">contato@ic.com.br</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,130 @@
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    color: #000;
+}
+
+/* Header/Navbar */
+.header, .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+}
+
+.header .logo, .navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.header .nav, .navbar .nav-links, .navbar .menu {
+    display: flex;
+    gap: 20px;
+}
+
+.header .nav a, .navbar .nav-links a, .navbar .menu a {
+    text-decoration: none;
+    color: #000;
+    font-size: 16px;
+}
+
+.header .search, .navbar .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header .search input, .navbar .search-bar input {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Containers específicos */
+.login-container, .register-container, .home-container, .tools-container, .features-container, .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 0px 0px;
+    isolation: isolate;
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    background: #FFFFFF;
+}
+
+/* Conteúdo principal */
+.main, .main-content, .content {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.main h1, .main-content h1, .content h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+/* Formulários */
+.login-form, .form-section .form {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.login-form label, .form-section .form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.login-form input, .form-section .form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.login-form button, .form-section .form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Seções de ferramentas e recursos */
+.tools-section, .features {
+    padding: 40px;
+    text-align: center;
+}
+
+.tools-section h2, .features h2 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.tools-section .tools-grid, .features {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tools-section .tool-card, .features .feature {
+    width: 200px;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 20px; /* Added px unit to padding value */
+}

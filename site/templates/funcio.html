@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IC - Funcionalidades</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">IC</div>
+        <div class="menu">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#">Sobre</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="#">Contato</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Funcionalidades</h1>
+        <div class="features">
+            <div class="feature">
+                <img src="{{ url_for('static', filename='images/rotulagem-automatica.jpg') }}" alt="Imagem de Rotulagem Automática" width="300" height="100"/>
+                <h3>Rotulagem Automática</h3>
+                <p>Funcionalidade que utiliza Inteligência Artificial para rotular automaticamente dados.</p>
+                <div class="tag">IA</div>
+            </div>
+            <div class="feature">
+                <img src="{{ url_for('static', filename='images/seguranca-dados.jpg') }}" alt="Imagem de Segurança de Dados" width="300" height="100"/>
+                <h3>Segurança de Dados</h3>
+                <p>Mecanismos avançados de segurança para proteção dos dados do usuário.</p>
+                <div class="tag">Segurança</div>
+            </div>
+            <div class="feature">
+                <img src="{{ url_for('static', filename='images/exportacao-datasets.jpg') }}" alt="Imagem de Exportação de Datasets" width="300" height="100"/>
+                <h3>Exportação de Datasets</h3>
+                <p>Facilidade para exportar conjuntos de dados em diversos formatos.</p>
+                <div class="tag">Exportar</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

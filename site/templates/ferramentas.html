@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IC - Ferramentas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">IC</div>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#">Sobre</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="#">Contato</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Pesquisar no Site">
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Ferramentas Disponíveis</h1>
+        <button class="explore-button" onclick="location.href='#tools-section'">Explorar Ferramentas</button>
+        <div class="image-placeholder">
+            <img src="{{ url_for('static', filename='images/tools-banner.jpg') }}" alt="Ferramentas Banner">
+        </div>
+    </div>
+
+    <div id="tools-section" class="tools-section">
+        <h2>Ferramentas Disponíveis</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="image-placeholder">
+                    <img src="{{ url_for('static', filename='images/labelimg-icon.png') }}" alt="LabelImg Icon">
+                </div>
+                <h3>LabelImg</h3>
+                <p>Ferramenta para rotulagem de imagens</p>
+                <a href="#" class="tool-button">Usar LabelImg</a>
+            </div>
+            <div class="tool-card">
+                <div class="image-placeholder">
+                    <img src="#" alt="YOLOv8 Icon">
+                </div>
+                <h3>YOLOv8</h3>
+                <p>Ferramenta para detecção de objetos</p>
+                <a href="#" class="tool-button">Usar YOLOv8</a>
+            </div>
+            <div class="tool-card">
+                <div class="image-placeholder">
+                    <img src="#" alt="Roboflow Icon">
+                </div>
+                <h3>Roboflow</h3>
+                <p>Plataforma para treinamento de modelos</p>
+                <a href="#" class="tool-button">Usar Roboflow</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

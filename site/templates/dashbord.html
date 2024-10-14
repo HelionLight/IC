@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IC - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">IC</div>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#">Sobre</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="#">Contatos</a>
+        </div>
+        <div class="search">
+            <input type="text" placeholder="Pesquisar no site">
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <h2>Progresso Feito</h2>
+        <div class="charts">
+            <div class="chart">
+                <img src="{{ url_for('static', filename='images/pie-chart.jpg') }}" alt="Gráfico de pizza mostrando progresso" width="240" height="240">
+                <p>Pizza</p>
+            </div>
+            <div class="chart">
+                <img src="{{ url_for('static', filename='images/bar-chart.jpg') }}" alt="Gráfico de barras mostrando progresso" width="240" height="240">
+                <p>Barras</p>
+            </div>
+        </div>
+
+        <h2>Imagens & Status do Treinamento</h2>
+        <div class="training-status">
+            {% for dataset in datasets %}
+            <div class="status">
+                <img src="{{ url_for('static', filename='images/' ~ dataset.thumbnail) }}" alt="Thumbnail para {{ dataset.name }}" width="50" height="50">
+                <div class="info">
+                    <p class="title">{{ dataset.name }}</p>
+                    <p class="subtitle">{{ dataset.image_count }} imagens</p>
+                </div>
+                <div class="percentage">{{ dataset.progress }}%</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-section">
+            <form action="{{ url_for('create_dataset') }}" method="post">
+                <input type="text" name="dataset_name" placeholder="Nome Novo Data" required>
+                <div>
+                    <button type="submit" class="export-button">Exportar Dados</button>
+                    <button type="submit" class="start-button" name="start_training">Iniciar Novo Treinamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
