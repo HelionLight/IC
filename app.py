@@ -19,8 +19,14 @@ def verificar_usuario_no_banco(email, password):
     cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
     user = cur.fetchone()
     cur.close()
-    if user and check_password_hash(user[2], password):  # Supondo que a senha seja a terceira coluna
-        return user
+    if user:
+        print(f"Usuário encontrado: {user}")  # Debug
+        if check_password_hash(user[3], password):  # Supondo que a senha seja a quarta coluna
+            return user
+        else:
+            print("Senha incorreta.")  # Debug
+    else:
+        print("Usuário não encontrado.")  # Debug
     return None
 
 # Função para carregar usuario
@@ -30,6 +36,14 @@ def carregar_usuario(user_id):
     user = cur.fetchone()
     cur.close()
     return user
+
+# Função para obter datasets
+#def obter_datasets():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM datasets")  # Ajuste esta consulta conforme sua tabela
+    datasets = cur.fetchall()
+    cur.close()
+    return datasets
 
 @app.route('/')
 def home():
@@ -93,7 +107,9 @@ def dashboard():
         return redirect(url_for('login'))
     
     user = carregar_usuario(session['user_id'])
-    return render_template('dashboard.html', user=user)
+    #datasets = obter_datasets()  # Obter os datasets
+    print(f"Usuário carregado: {user}")  # Debug
+    return render_template('dashboard.html', user=user,)# Passar datasets para o template
 
 @app.route('/usuarios')
 def usuarios():
@@ -106,7 +122,7 @@ def usuarios():
 @app.route('/excluir_usuario/<int:user_id>')
 def excluir_usuario(user_id):
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
+    cur .execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
     mysql.connection.commit()
     cur.close()
     flash('Usuário excluído com sucesso', 'success')
@@ -114,17 +130,32 @@ def excluir_usuario(user_id):
 
 @app.route('/editar_usuario/<int:user_id>', methods=['GET', 'POST'])
 def editar_usuario(user_id):
-    cur = mysql.connection.cursor()
     if request.method == 'POST':
         full_name = request.form['full_name']
         email = request.form['email']
-        
-        cur.execute("UPDATE usuarios SET full_name = %s, email = %s WHERE id = %s", (full_name, email, user_id))
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            flash('As senhas não coincidem', 'danger')
+            return redirect(url_for('editar_usuario', user_id=user_id))
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM usuarios WHERE email = %s AND id != %s", (email, user_id))
+        user = cur.fetchone()
+
+        if user:
+            flash('Este email já está em uso', 'danger')
+            return redirect(url_for('editar_usuario', user_id=user_id))
+
+        hashed_password = generate_password_hash(password)
+        cur.execute("UPDATE usuarios SET full_name = %s, email = %s, senha = %s WHERE id = %s", (full_name, email, hashed_password, user_id))
         mysql.connection.commit()
-        cur.close()
-        flash('Usuário atualizado com sucesso', 'success')
+        cur.close()  # Fechar o cursor após a operação
+        flash('Usuário editado com sucesso', 'success')
         return redirect(url_for('usuarios'))
     
+    cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
     user = cur.fetchone()
     cur.close()

@@ -38,28 +38,7 @@
         </div>
 
         <h2>Imagens & Status do Treinamento</h2>
-        <div class="training-status">
-            {% for dataset in datasets %}
-            <div class="status">
-                <img src="{{ url_for('static', filename='images/' ~ dataset.thumbnail) }}" alt="Thumbnail para {{ dataset.name }}" width="50" height="50">
-                <div class="info">
-                    <p class="title">{{ dataset.name }}</p>
-                    <p class="subtitle">{{ dataset.image_count }} imagens</p>
-                </div>
-                <div class="percentage">{{ dataset.progress }}%</div>
-            </div>
-            {% endfor %}
-        </div>
 
-        <div class="form-section">
-            <form action="{{ url_for('create_dataset') }}" method="post">
-                <input type="text" name="dataset_name" placeholder="Nome Novo Data" required>
-                <div>
-                    <button type="submit" class="export-button">Exportar Dados</button>
-                    <button type="submit" class="start-button" name="start_training">Iniciar Novo Treinamento</button>
-                </div>
-            </form>
-        </div>
     </div>
 </body>
 </html>
