@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Página de Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
@@ -27,16 +27,20 @@
         <div class="login-form">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
+                    <ul class="alert-messages">
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                        <li class="alert alert-{{ category }}">{{ message }}</li>
                     {% endfor %}
+                    </ul>
                 {% endif %}
             {% endwith %}
             <form method="POST" action="{{ url_for('login') }}">
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" placeholder="Insira seu email" required>
+                
                 <label for="password">Senha</label>
                 <input id="password" name="password" type="password" placeholder="Insira sua senha" required>
+                
                 <button type="submit">Login</button>
             </form>
         </div>
@@ -49,7 +53,7 @@
                 <img src="{{ url_for('static', filename='images/lock-icon.jpg') }}" alt="Ícone de cadeado" width="50" height="50"/>
                 <div class="text">
                     <div class="title">Esqueceu a senha</div>
-                    <div>Reset aqui</div>
+                    <div><a href="#">Reset aqui</a></div>
                 </div>
             </div>
             <div class="option">
@@ -63,7 +67,7 @@
     </div>
     
     <div class="footer">
-        &copy; 2023 MyPlatform. All rights reserved.
+        &copy; 2023 MyPlatform. Todos os direitos reservados.
     </div>
 </body>
 </html>

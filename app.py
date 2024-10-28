@@ -1,30 +1,35 @@
 from flask import Flask, render_template, redirect, url_for, session, flash, request
+from flask_mysqldb import MySQL
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+# Configuração do MySQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'titi020205'
+app.config['MYSQL_DB'] = 'bancoIC'
+app.secret_key = 'sua_chave_secreta'  # Adicione uma chave secreta para usar o flash
+
+mysql = MySQL(app)
+
 # Função para verificar usuário no banco de dados
 def verificar_usuario_no_banco(email, password):
-    # Simulando uma consulta ao banco de dados
-    usuarios = [
-        {'id': 1, 'email': 'user1@example.com', 'senha': 'password1'},
-        {'id': 2, 'email': 'user2@example.com', 'senha': 'password2'}
-    ]
-    for user in usuarios:
-        if user['email'] == email and user['senha'] == password:
-            return user
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+    user = cur.fetchone()
+    cur.close()
+    if user and check_password_hash(user[2], password):  # Supondo que a senha seja a terceira coluna
+        return user
     return None
 
 # Função para carregar usuario
 def carregar_usuario(user_id):
-    # Simulando uma consulta ao banco de dados
-    usuarios = [
-        {'id': 1, 'email': 'user1@example.com'},
-        {'id': 2, 'email': 'user2@example.com'}
-    ]
-    for user in usuarios:
-        if user['id'] == user_id:
-            return user
-    return None
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
+    user = cur.fetchone()
+    cur.close()
+    return user
 
 @app.route('/')
 def home():
@@ -46,7 +51,7 @@ def login():
         
         user = verificar_usuario_no_banco(email, password)
         if user:
-            session['user_id'] = user['id']
+            session['user_id'] = user[0]  # Supondo que o ID do usuário seja o primeiro elemento
             return redirect(url_for('dashboard'))
         else:
             flash('Login inválido. Verifique suas credenciais.', 'danger')
@@ -55,12 +60,30 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        full_name = request.form['full_name']
         email = request.form['email']
         password = request.form['password']
-        
-        # Simulando a inserção de dados no banco de dados
-        flash('Cadastro realizado com sucesso!', 'success')
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            flash('As senhas não coincidem', 'danger')
+            return redirect(url_for('register'))
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+        user = cur.fetchone()
+
+        if user:
+            flash('Este email já está em uso', 'danger')
+            return redirect(url_for('register'))
+
+        hashed_password = generate_password_hash(password)
+        cur.execute("INSERT INTO usuarios (full_name, email, senha) VALUES (%s, %s, %s)", (full_name, email, hashed_password))
+        mysql.connection.commit()
+        cur.close()  # Fechar o cursor após a operação
+        flash('Conta criada com sucesso', 'success')
         return redirect(url_for('login'))
+    
     return render_template('registrar.html')
 
 @app.route('/dashboard')
@@ -71,6 +94,41 @@ def dashboard():
     
     user = carregar_usuario(session['user_id'])
     return render_template('dashboard.html', user=user)
+
+@app.route('/usuarios')
+def usuarios():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM usuarios")
+    all_users = cur.fetchall()
+    cur.close()
+    return render_template('usuarios.html', users=all_users)
+
+@app.route('/excluir_usuario/<int:user_id>')
+def excluir_usuario(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
+    mysql.connection.commit()
+    cur.close()
+    flash('Usuário excluído com sucesso', 'success')
+    return redirect(url_for('usuarios'))
+
+@app.route('/editar_usuario/<int:user_id>', methods=['GET', 'POST'])
+def editar_usuario(user_id):
+    cur = mysql.connection.cursor()
+    if request.method == 'POST':
+        full_name = request.form['full_name']
+        email = request.form['email']
+        
+        cur.execute("UPDATE usuarios SET full_name = %s, email = %s WHERE id = %s", (full_name, email, user_id))
+        mysql.connection.commit()
+        cur.close()
+        flash('Usuário atualizado com sucesso', 'success')
+        return redirect(url_for('usuarios'))
+    
+    cur.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
+    user = cur.fetchone()
+    cur.close()
+    return render_template('editar_usuario.html', user=user)
 
 if __name__ == '__main__':
     app.run(debug=True)

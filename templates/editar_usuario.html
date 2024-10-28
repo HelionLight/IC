@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Usuário</title>
+</head>
+<body>
+    <h1>Editar Usuário</h1>
+    <form method="POST">
+        <label for="full_name">Nome Completo:</label>
+        <input type="text" name="full_name" value="{{ user[1] }}" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" name="email" value="{{ user[3] }}" required>
+        <br>
+        <button type="submit">Atualizar</button>
+    </form>
+</body>
+</html>

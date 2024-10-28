@@ -43,7 +43,7 @@
                     <input type="password" name="password" placeholder="Insira uma Senha" required>
                     <input type="password" name="confirm_password" placeholder="Confirme a Senha" required>
                     <div class="buttons">
-                        <button type="button" class="cancel" href= "{{ url_for('home') }}'">Cancelar</button>
+                        <button type="button" class="cancel" onclick="window.location.href='{{ url_for('home') }}'">Cancelar</button>
                         <button type="submit" class="register">Registrar</button>
                     </div>
                 </form>
