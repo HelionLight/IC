@@ -25,6 +25,31 @@
 
     <div class="content">
         <h1>Dashboard</h1>
+        <h2>Lista de Usuários</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.id }}</td>  <!-- ID do usuário -->
+                    <td>{{ usuario.nome }}</td>  <!-- Nome do usuário -->
+                    <td>{{ usuario.email }}</td>  <!-- Email do usuário -->
+                    <td>
+                        <a href="{{ url_for('editar_usuario', user_id=usuario.id) }}">Editar</a>
+                        <a href="{{ url_for('excluir_usuario', user_id=usuario.id) }}" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <h2>Progresso Feito</h2>
         <div class="charts">
             <div class="chart">
@@ -41,5 +66,4 @@
 
     </div>
 </body>
-</html>
 </html>

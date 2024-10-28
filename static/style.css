@@ -128,3 +128,14 @@ body {
     border-radius: 10px;
     padding: 20px; /* Added px unit to padding value */
 }
+.btn-excluir {
+    color: white;
+    background-color: red;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-excluir:hover {
+    background-color: darkred;
+}
