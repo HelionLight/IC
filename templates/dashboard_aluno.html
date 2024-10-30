@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Aluno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">IC</div>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#">Sobre</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="#">Contatos</a>
+        </div>
+        <div class="user-info">
+            <span>Bem-vindo, {{ user[1] }}!</span> <!-- Supondo que o nome do usuário seja o segundo elemento -->
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard do Aluno</h1>
+
+        <h2>Progresso Feito</h2>
+        <div class="charts">
+            <div class="chart">
+                <img src="{{ url_for('static', filename='images/pie-chart.jpg') }}" alt="Gráfico de pizza mostrando progresso" width="240" height="240">
+                <p>Pizza</p>
+            </div>
+            <div class="chart">
+                <img src="{{ url_for('static', filename='images/bar-chart.jpg') }}" alt="Gráfico de barras mostrando progresso" width="240" height="240">
+                <p>Barras</p>
+            </div>
+        </div>
+
+        <h2>Imagens & Status do Treinamento</h2>
+        <!-- Adicione aqui o conteúdo relevante sobre imagens e status do treinamento -->
+    </div>
+</body>
+</html>

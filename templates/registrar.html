@@ -27,49 +27,13 @@
         <div class="form-section">
             <div>
                 <div class="form-title">Registro de Usuário</div>
-                <div class="form-subtitle">Crie sua Conta</div>
+                <div class="form-subtitle">Escolha seu tipo de conta</div>
             </div>
             <div class="form">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                <form method="POST" action="{{ url_for('register') }}">
-                    <input type="text" name="full_name" placeholder="Insira seu Nome Completo" required>
-                    <input type="email" name="email" placeholder="Insira seu Email" required>
-                    <input type="password" name="password" placeholder="Insira uma Senha" required>
-                    <input type="password" name="confirm_password" placeholder="Confirme a Senha" required>
-                    <div class="buttons">
-                        <button type="button" class="cancel" onclick="window.location.href='{{ url_for('home') }}'">Cancelar</button>
-                        <button type="submit" class="register">Registrar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="info-section">
-            <div class="info">
-                <img src="{{ url_for('static', filename='images/user-icon.jpg') }}" alt="Ícone de usuário" width="50" height="50"/>
-                <div class="info-text">
-                    <div class="info-title">Registro de novo usuário</div>
-                    <div class="info-subtitle">Junte-se a nós para ter acesso total</div>
+                <div class="buttons">
+                    <button type="button" onclick="window.location.href='{{ url_for('registrar_aluno') }}'">Registrar como Aluno</button>
+                    <button type="button" onclick="window.location.href='{{ url_for('registrar_administrador') }}'">Registrar como Administrador</button>
                 </div>
-            </div>
-            <a href="{{ url_for('register') }}" class="start-button">Começar</a>
-        </div>
-
-        <div class="terms-section">
-            <div class="terms">
-                <div class="terms-title">Termos de Uso</div>
-                <div class="terms-text">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
-                </div>
-                <a href="{{ url_for('home') }}" class="decline">Recusar</a>
-                <button class="accept">Aceitar</button>
             </div>
         </div>
     </div>
