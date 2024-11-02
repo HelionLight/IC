@@ -1,35 +1,47 @@
 from flask import Flask, render_template, redirect, url_for, session, flash, request
-from flask_sqlalchemy import SQLAlchemy
+import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
 # Configuração do banco de dados
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:titi020205@localhost/bancoIC'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'titi020205'
+app.config['MYSQL_DB'] = 'bancoIC'
 app.secret_key = 'sua_chave_secreta'  # Adicione uma chave secreta para usar o flash
 
-db = SQLAlchemy(app)
-
-# Modelo de Usuário
-class Usuario(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    tipo_usuario = db.Column(db.Enum('aluno', 'administrador'), nullable=False)
+# Função para conectar ao banco de dados
+def conectar_banco():
+    return pymysql.connect(
+        host=app.config['MYSQL_HOST'],
+        user=app.config['MYSQL_USER'],
+        password=app.config['MYSQL_PASSWORD'],
+        database=app.config['MYSQL_DB']
+    )
 
 # Função para verificar usuário no banco de dados
 def verificar_usuario_no_banco(email, password):
-    user = Usuario.query.filter_by(email=email).first()
-    if user:
-        if check_password_hash(user.password, password):
-            return user
+    connection = conectar_banco()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
+    user = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    
+    if user and check_password_hash(user[3], password):  # user[3] é a senha
+        return user  # Retorna a tupla do usuário
     return None
 
 # Função para carregar usuario
 def carregar_usuario(user_id):
-    return Usuario.query.get(user_id)
+    connection = conectar_banco()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM usuario WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return user
 
 @app.route('/')
 def home():
@@ -51,7 +63,7 @@ def login():
         
         user = verificar_usuario_no_banco(email, password)
         if user:
-            session['user_id'] = user.id  # Supondo que o ID do usuário seja o primeiro elemento
+            session['user_id'] = user[0]  # Supondo que o ID do usuário seja o primeiro elemento
             return redirect(url_for('dashboard'))  # Redireciona para a nova rota de dashboard
         else:
             flash('Login inválido. Verifique suas credenciais.', 'danger')
@@ -65,9 +77,9 @@ def dashboard():
     
     user = carregar_usuario(session['user_id'])
     
-    if user.tipo_usuario == 'aluno':
+    if user[4] == 'aluno':  # user[4] é o tipo de usuário
         return redirect(url_for('dashboard_aluno'))
-    elif user.tipo_usuario == 'administrador':
+    elif user[4] == 'administrador':
         return redirect(url_for('dashboard_administrador'))
     
     flash('Tipo de usuário desconhecido', 'danger')
@@ -85,16 +97,20 @@ def registrar_aluno():
         password = request.form['password']
         hashed_password = generate_password_hash(password)
 
-        novo_usuario = Usuario(full_name=full_name, email=email, password=hashed_password, tipo_usuario='aluno')
-
+        connection = conectar_banco()
+        cursor = connection.cursor()
         try:
-            db.session.add(novo_usuario)
-            db.session.commit()
+            cursor.execute("INSERT INTO usuario (full_name, email, password, tipo_usuario) VALUES (%s, %s, %s, %s)", 
+                           (full_name, email, hashed_password, 'aluno'))
+            connection.commit()
             flash('Registro de aluno realizado com sucesso!', 'success')
             return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
         except Exception as e:
-            db.session.rollback()
+            connection.rollback()
             flash('Erro ao registrar aluno: {}'.format(str(e)), 'danger')
+        finally:
+            cursor.close()
+            connection.close()
     
     return render_template('registrar_aluno.html')
 
@@ -103,66 +119,43 @@ def registrar_administrador():
     if request.method == 'POST':
         full_name = request.form['full_name']
         email = request.form['email']
-        password = request.form['password']
+        password = request .form['password']
         hashed_password = generate_password_hash(password)
 
-        novo_usuario = Usuario(full_name=full_name, email=email, password=hashed_password, tipo_usuario='administrador')
-
+        connection = conectar_banco()
+        cursor = connection.cursor()
         try:
-            db.session.add(novo_usuario)
-            db.session.commit()
+            cursor.execute("INSERT INTO usuario (full_name, email, password, tipo_usuario) VALUES (%s, %s, %s, %s)", 
+                           (full_name, email, hashed_password, 'administrador'))
+            connection.commit()
             flash('Registro de administrador realizado com sucesso!', 'success')
             return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
         except Exception as e:
-            db.session.rollback()
+            connection.rollback()
             flash('Erro ao registrar administrador: {}'.format(str(e)), 'danger')
+        finally:
+            cursor.close()
+            connection.close()
     
     return render_template('registrar_administrador.html')
 
 @app.route('/dashboard/aluno')
 def dashboard_aluno():
-    return render_template('dashboard_aluno.html')
+    if 'user_id' not in session:
+        flash('Você precisa estar logado para acessar o dashboard', 'warning')
+        return redirect(url_for('login'))
+    
+    user = carregar_usuario(session['user_id'])
+    return render_template('dashboard_aluno.html', user=user)
 
 @app.route('/dashboard/administrador')
 def dashboard_administrador():
-    return render_template('dashboard_administrador.html')
-
-@app.route('/editar_usuario/<int:user_id>', methods=['GET', 'POST'])
-def editar_usuario(user_id):
-    user = carregar_usuario(user_id)
-    if request.method == 'POST':
-        full_name = request.form['full_name']
-        email = request.form['email']
-        password = request.form['password']
-        hashed_password = generate_password_hash(password)
-
-        user.full_name = full_name
-        user.email = email
-        user.password = hashed_password
-
-        try:
-            db.session.commit()
-            flash('Usuário editado com sucesso!', 'success')
-            return redirect(url_for('dashboard'))  # Redireciona para a página de dashboard
-        except Exception as e:
-            db.session.rollback()
-            flash('Erro ao editar usuário: {}'.format(str(e)), 'danger')
+    if 'user_id' not in session:
+        flash('Você precisa estar logado para acessar o dashboard', 'warning')
+        return redirect(url_for('login'))
     
-    return render_template('editar_usuario.html', user=user)
-
-@app.route('/excluir_usuario/<int:user_id>')
-def excluir_usuario(user_id):
-    user = carregar_usuario(user_id)
-    try:
-        db.session.delete(user)
-        db.session.commit()
-        flash('Usuário excluído com sucesso!', 'success')
-        return redirect(url_for('dashboard'))  # Redireciona para a página de dashboard
-    except Exception as e:
-        db.session.rollback()
-        flash('Erro ao excluir usuário: {}'.format(str(e)), 'danger')
-    
-    return redirect(url_for('dashboard'))
+    user = carregar_usuario(session['user_id'])
+    return render_template('dashboard_administrador.html', user=user)
 
 @app.route('/logout')
 def logout():

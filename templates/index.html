@@ -1,23 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IC - Página Inicial</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
-</head>
-<body>
-    <div class="navbar">
-        <div class="logo">IC</div>
-        <div class="nav-links">
-            <a href="{{ url_for('home') }}" class="active">Home</a>
-            <a href="#">Sobre</a>
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('ferramentas') }}">Ferramentas</a>
-            <a href="#">Contato</a>
-        </div>
+{% extends base.html' %}
+
+
+{% block title content %} Home  {% endblock %}
+
+{% block content %}
         <div class="search">
             <input type="text" placeholder="Pesquisar no site"/>
             <i class="fas fa-search"></i>
@@ -81,3 +67,4 @@
     </footer>
 </body>
 </html>
+{% endblock %}
