@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 # Configuração do banco de dados
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'titi020205'
-app.config['MYSQL_DB'] = 'bancoIC'
+app.config['MYSQL_USER'] = 'ic'
+app.config['MYSQL_PASSWORD'] = '1234'
+app.config['MYSQL_DB'] = 'IC'
 app.secret_key = 'sua_chave_secreta'  # Adicione uma chave secreta para usar o flash
 
 # Função para conectar ao banco de dados
@@ -32,7 +32,7 @@ def verificar_usuario_no_banco(email, senha):
 
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
+        cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
         user = cursor.fetchone()
     finally:
         cursor.close()  # Fecha o cursor
@@ -64,13 +64,75 @@ def funcionalidades():
 def ferramentas():
     return render_template('ferramentas.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    return render_template('registrar.html')
+
+@app.route('/register/aluno', methods=['GET', 'POST'])
+def registrar_aluno():
+    if request.method == 'POST':
+        full_name = request.form['full_name']
+        email = request.form['email']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password)
+
+        connection = conectar_banco()
+        if connection is None:
+            flash('Erro ao conectar ao banco de dados.', 'danger')
+            return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
+
+        cursor = connection.cursor()
+        try:
+            cursor.execute("INSERT INTO usuarios (full_name, email, senha, tipo_usuario) VALUES (%s, %s, %s, %s)", 
+                           (full_name, email, hashed_password, 'aluno'))
+            connection.commit()
+            flash('Registro de aluno realizado com sucesso!', 'success')
+            return redirect(url_for('login'))  # Redireciona para a página inicial ou outra página
+        except Exception as e:
+            connection.rollback()
+            flash('Erro ao registrar aluno: {}'.format(str(e)), 'danger')
+        finally:
+            cursor.close()  # Fecha o cursor
+            connection.close()  # Fecha a conexão
+
+    return render_template('registrar_aluno.html')
+
+@app.route('/register/administrador', methods=['GET', 'POST'])
+def registrar_administrador():
+    if request.method == 'POST':
+        full_name = request.form['full_name']
+        email = request.form['email']
+        password = request .form['password']
+        hashed_password = generate_password_hash(password)
+
+        connection = conectar_banco()
+        if connection is None:
+            flash('Erro ao conectar ao banco de dados.', 'danger')
+            return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
+        
+        cursor = connection.cursor()
+        try:
+            cursor.execute("INSERT INTO usuarios (full_name, email, senha, tipo_usuario) VALUES (%s, %s, %s, %s)", 
+                           (full_name, email, hashed_password, 'administrador'))
+            connection.commit()
+            flash('Registro de administrador realizado com sucesso!', 'success')
+            return redirect(url_for('login'))  # Redireciona para a página inicial ou outra página
+        except Exception as e:
+            connection.rollback()
+            flash('Erro ao registrar administrador: {}'.format(str(e)), 'danger')
+        finally:
+            cursor.close()
+            connection.close()
+    
+    return render_template('registrar_administrador.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
-        senha = request.form['senha']
+        password = request.form['password']
         
-        user = verificar_usuario_no_banco(email, senha)
+        user = verificar_usuario_no_banco(email, password)
         if user:
             session['user_id'] = user[0]  # Supondo que o ID do usuário seja o primeiro elemento
             return redirect(url_for('dashboard'))  # Redireciona para a nova rota de dashboard
@@ -93,64 +155,6 @@ def dashboard():
     
     flash('Tipo de usuário desconhecido', 'danger')
     return redirect(url_for('home'))
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    return render_template('registrar.html')
-
-@app.route('/register/aluno', methods=['GET', 'POST'])
-def registrar_aluno():
-    if request.method == 'POST':
-        full_name = request.form['full_name']
-        email = request.form['email']
-        senha = request.form['senha']
-        hashed_password = generate_password_hash(senha)
-
-        connection = conectar_banco()
-        if connection is None:
-            flash('Erro ao conectar ao banco de dados.', 'danger')
-            return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
-
-        cursor = connection.cursor()
-        try:
-            cursor.execute("INSERT INTO usuarios (full_name, email, senha, tipo_usuario) VALUES (%s, %s, %s, %s)", 
-                           (full_name, email, hashed_password, 'aluno'))
-            connection.commit()
-            flash('Registro de aluno realizado com sucesso!', 'success')
-            return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
-        except Exception as e:
-            connection.rollback()
-            flash('Erro ao registrar aluno: {}'.format(str(e)), 'danger')
-        finally:
-            cursor.close()  # Fecha o cursor
-            connection.close()  # Fecha a conexão
-
-    return render_template('registrar_aluno.html')
-
-@app.route('/register/administrador', methods=['GET', 'POST'])
-def registrar_administrador():
-    if request.method == 'POST':
-        full_name = request.form['full_name']
-        email = request.form['email']
-        password = request .form['password']
-        hashed_password = generate_password_hash(password)
-
-        connection = conectar_banco()
-        cursor = connection.cursor()
-        try:
-            cursor.execute("INSERT INTO usuarios (full_name, email, password, tipo_usuario) VALUES (%s, %s, %s, %s)", 
-                           (full_name, email, hashed_password, 'administrador'))
-            connection.commit()
-            flash('Registro de administrador realizado com sucesso!', 'success')
-            return redirect(url_for('home'))  # Redireciona para a página inicial ou outra página
-        except Exception as e:
-            connection.rollback()
-            flash('Erro ao registrar administrador: {}'.format(str(e)), 'danger')
-        finally:
-            cursor.close()
-            connection.close()
-    
-    return render_template('registrar_administrador.html')
 
 @app.route('/dashboard/aluno')
 def dashboard_aluno():
