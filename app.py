@@ -135,6 +135,7 @@ def login():
         user = verificar_usuario_no_banco(email, password)
         if user:
             session['user_id'] = user[0]  # Supondo que o ID do usuário seja o primeiro elemento
+            session['user_type'] = user[4]  # Supondo que o tipo de usuário seja o quinto elemento
             return redirect(url_for('dashboard'))  # Redireciona para a nova rota de dashboard
         else:
             flash('Login inválido. Verifique suas credenciais.', 'danger')
@@ -142,37 +143,43 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    if 'user_id' not in session:
-        flash('Você precisa estar logado para acessar o dashboard', 'warning')
-        return redirect(url_for('login'))
-    
-    user = carregar_usuario(session['user_id'])
-    
-    if user[4] == 'aluno':  # user[4] é o tipo de usuário
-        return redirect(url_for('dashboard_aluno'))
-    elif user[4] == 'administrador':
-        return redirect(url_for('dashboard_administrador'))
-    
-    flash('Tipo de usuário desconhecido', 'danger')
-    return redirect(url_for('home'))
+    user_type = session.get('user_type')
+    if user_type == 'administrador':
+        connection = conectar_banco()
+        if connection is None:
+            flash('Erro ao conectar ao banco de dados.', 'danger')
+            return redirect(url_for('home'))
 
-@app.route('/dashboard/aluno')
-def dashboard_aluno():
-    if 'user_id' not in session:
-        flash('Você precisa estar logado para acessar o dashboard', 'warning')
-        return redirect(url_for('login'))
-    
-    user = carregar_usuario(session['user_id'])
-    return render_template('dashboard_aluno.html', user=user)
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, full_name, email FROM usuarios WHERE tipo_usuario = 'aluno'")
+        usuarios = cursor.fetchall()
+        cursor.close()
+        connection.close()
 
-@app.route('/dashboard/administrador')
-def dashboard_administrador():
-    if 'user_id' not in session:
-        flash('Você precisa estar logado para acessar o dashboard', 'warning')
-        return redirect(url_for('login'))
-    
-    user = carregar_usuario(session['user_id'])
-    return render_template('dashboard_administrador.html', user=user)
+        return render_template('dashboard_administrador.html', usuarios=usuarios)  # Renderiza o dashboard do administrador
+    else:
+        return render_template('dashboard_aluno.html')  # Renderiza o dashboard do aluno
+
+@app.route('/excluir_usuario/<int:user_id>', methods=['POST'])
+def excluir_usuario(user_id):
+    connection = conectar_banco()
+    if connection is None:
+        flash('Erro ao conectar ao banco de dados.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    cursor = connection.cursor()
+    try:
+        cursor.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
+        connection.commit()
+        flash('Usuário excluído com sucesso!', 'success')
+    except Exception as e:
+        connection.rollback()
+        flash('Erro ao excluir usuário: {}'.format(str(e)), 'danger')
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 def logout():

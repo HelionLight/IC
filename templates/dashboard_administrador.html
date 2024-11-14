@@ -1,69 +1,55 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IC - Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Dashboard do Administrador</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="navbar">
-        <div class="logo">IC</div>
-        <div class="nav-links">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="#">Sobre</a>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="#">Contatos</a>
-        </div>
-        <div class="search">
-            <input type="text" placeholder="Pesquisar no site">
-            <i class="fas fa-search"></i>
-        </div>
-    </div>
+    <div class="container mt-5">
+        <h1>Dashboard do Administrador</h1>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 
-    <div class="content">
-        <h1>Dashboard</h1>
-        <h2>Lista de Usuários</h2>
-        <table border="1">
+        <h2 class="mt-4">Lista de Alunos</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-dismissible fade show" role="alert">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <table class="table table-bordered mt-3">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nome</th>
+                    <th>Nome Completo</th>
                     <th>Email</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for usuario in usuarios %}
-                <tr>
-                    <td>{{ usuario.id }}</td>  <!-- ID do usuário -->
-                    <td>{{ usuario.nome }}</td>  <!-- Nome do usuário -->
-                    <td>{{ usuario.email }}</td>  <!-- Email do usuário -->
-                    <td>
-                        <a href="{{ url_for('editar_usuario', user_id=usuario.id) }}">Editar</a>
-                        <a href="{{ url_for('excluir_usuario', user_id=usuario.id) }}" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>{{ usuario[0] }}</td> <!-- ID do usuário -->
+                        <td>{{ usuario[1] }}</td> <!-- Nome completo -->
+                        <td>{{ usuario[2] }}</td> <!-- Email -->
+                        <td>
+                            <form action="{{ url_for('excluir_usuario', user_id=usuario[0]) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-        <h2>Progresso Feito</h2>
-        <div class="charts">
-            <div class="chart">
-                <img src="{{ url_for('static', filename='images/pie-chart.jpg') }}" alt="Gráfico de pizza mostrando progresso" width="240" height="240">
-                <p>Pizza</p>
-            </div>
-            <div class="chart">
-                <img src="{{ url_for('static', filename='images/bar-chart.jpg') }}" alt="Gráfico de barras mostrando progresso" width="240" height="240">
-                <p>Barras</p>
-            </div>
-        </div>
-
-        <h2>Imagens & Status do Treinamento</h2>
-
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
