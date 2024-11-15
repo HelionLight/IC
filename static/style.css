@@ -24,7 +24,7 @@ body {
 
 .header .nav, .navbar .nav-links, .navbar .menu {
     display: flex;
-    gap: 20px;
+    gap: 15px;
 }
 
 .header .nav a, .navbar .nav-links a, .navbar .menu a {

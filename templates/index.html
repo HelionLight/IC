@@ -14,8 +14,12 @@
         <div class="nav-links">
             <a href="{{ url_for('home') }}">Home</a>
             <a href="#">Sobre</a>
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="#">Contatos</a>
+            {% if 'user_id' in session %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
         </div>
         <div class="search">
             <input type="text" placeholder="Pesquisar no site"/>

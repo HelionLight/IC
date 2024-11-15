@@ -129,6 +129,9 @@ def registrar_administrador():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))  # Redireciona para o dashboard se já estiver logado
+
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -195,6 +198,7 @@ def excluir_usuario(user_id):
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
+    session.pop('user_type', None)
     flash('Você foi desconectado com sucesso!', 'success')
     return redirect(url_for('home'))
 
