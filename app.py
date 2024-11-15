@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session, flash, request
+from functools import wraps
 import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -141,7 +142,17 @@ def login():
             flash('Login inválido. Verifique suas credenciais.', 'danger')
     return render_template('login.html')
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Você precisa estar logado para acessar esta página.', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/dashboard')
+@login_required
 def dashboard():
     user_type = session.get('user_type')
     if user_type == 'administrador':
