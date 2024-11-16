@@ -165,7 +165,12 @@ def dashboard():
             return redirect(url_for('home'))
 
         cursor = connection.cursor()
-        cursor.execute("SELECT id, full_name, email FROM usuarios WHERE tipo_usuario = 'aluno'")
+        cursor.execute("""
+            SELECT u.id, u.full_name, u.email, n.nota 
+            FROM usuarios u 
+            LEFT JOIN notas n ON u.id = n.usuario_id 
+            WHERE u.tipo_usuario = 'aluno'
+        """)
         usuarios = cursor.fetchall()
         cursor.close()
         connection.close()

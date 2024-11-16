@@ -43,6 +43,7 @@
                     <th>ID</th>
                     <th>Nome Completo</th>
                     <th>Email</th>
+                    <th>Notas</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -52,6 +53,7 @@
                         <td>{{ usuario[0] }}</td> <!-- ID do usuário -->
                         <td>{{ usuario[1] }}</td> <!-- Nome completo -->
                         <td>{{ usuario[2] }}</td> <!-- Email -->
+                        <td>{{ usuario[5] }}</td> <!-- Notas, assumindo que as notas estão na quarta posição -->
                         <td>
                             <form action="{{ url_for('excluir_usuario', user_id=usuario[0]) }}" method="POST" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</button>
